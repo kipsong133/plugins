@@ -2,10 +2,12 @@
 
 The why skill spawns one investigator per available evidence category, each reading a single source-specific playbook below. The playbooks are concrete examples for common MCPs. Adapt them for a different MCP in the same category.
 
+Issue / ticket tracker is gated by workspace `.cursor/pstack-tracker.json` (see **Issue / ticket tracker project policy** in `SKILL.md`). When `issueTracker` is `none`, or unset with no seed ticket IDs, do not spawn this category and do not use the playbooks below for Jira/Linear/Atlassian.
+
 | Category | Playbook | Example MCP it documents |
 |---|---|---|
 | Source control history | [`code-archaeology.md`](./sources/code-archaeology.md) | git, `gh` |
-| Issue / ticket tracker | [`linear.md`](./sources/linear.md) | Linear (adapt for Jira, GitHub Issues, Plane, Shortcut) |
+| Issue / ticket tracker | [`linear.md`](./sources/linear.md) | Linear (adapt for Jira, GitHub Issues, Plane, Shortcut). Skip when `issueTracker` is `none`. |
 | Long-form documents | [`notion.md`](./sources/notion.md) | Notion (adapt for Confluence, Google Docs, Coda) |
 | Real-time team chat | [`slack.md`](./sources/slack.md) | Slack (adapt for Discord, Microsoft Teams, Mattermost) |
 | Infrastructure observability | [`datadog.md`](./sources/datadog.md) | Datadog (adapt for New Relic, Honeycomb, Grafana, Splunk) |

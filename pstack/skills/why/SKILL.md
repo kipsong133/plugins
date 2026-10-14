@@ -46,7 +46,25 @@ Map each available MCP to one evidence category:
 
 Source control is always available through git and `gh`. For the other six, classify using the MCP name, server instructions, tool names, and resource descriptors. If an MCP could fit more than one category, choose the one matching its primary evidence. Record ambiguous cases in the coverage map.
 
-Spawn one investigator per category that has a matching MCP, all in a single message so they run concurrently, each owning exactly one tool or MCP. Don't ask one agent to cover multiple MCPs. `model`: the `why investigators` line, default `grok-4.7-xhigh-fast`.
+### Issue / ticket tracker project policy
+
+Before mapping any MCP into **Issue / ticket tracker**, read `.cursor/pstack-tracker.json` from the workspace root when it exists. Shape:
+
+```json
+{ "issueTracker": "none" }
+```
+
+Supported `issueTracker` values:
+
+- `none` — this project does not use an external issue tracker. **Do not spawn** the Issue / ticket tracker investigator, and **do not** classify Jira, Linear, Atlassian, Plane, or Shortcut MCPs into that category, even if those MCPs are installed (they may exist for docs or other uses).
+- `github` — current-repo GitHub Issues only (`gh`), never org-wide Jira/Linear search.
+- `jira` / `linear` / other — use the matching tracker MCP with that product's playbook.
+
+When the file is **missing** (or has no `issueTracker` field): treat as unused unless the code anchor already contains explicit ticket IDs. If there are no ticket IDs in the seed commits/PR bodies, skip Issue / ticket tracker the same way as `none`. If ticket IDs are present but no tracker is configured, still do **not** open org-wide Jira/Linear search; leave those IDs for the source-control investigator's PR/commit trail and skip the tracker investigator.
+
+Record the skip in Sources Consulted, for example: `Issue tracker skipped — project does not use an external tracker (issueTracker: none).`
+
+Spawn one investigator per category that has a matching MCP **and is not skipped by the policy above**, all in a single message so they run concurrently, each owning exactly one tool or MCP. Don't ask one agent to cover multiple MCPs. `model`: the `why investigators` line, default `grok-4.7-xhigh-fast`.
 
 Each investigator's prompt is `references/investigator-prompt.md` filled in, plus:
 - the category playbook `references/sources/<source>.md` for the selected MCP, adapted from the examples in `references/source-playbook.md`
@@ -67,12 +85,13 @@ Each category below is uniquely positioned to surface one shape of "why", shown 
 
 ### When to skip an investigator
 
-Only with an **explicit, written justification** that goes in the final Sources Consulted. Two valid reasons:
+Only with an **explicit, written justification** that goes in the final Sources Consulted. Valid reasons:
 
 - **No MCP is available for that category** in this environment. Flag it as a gap, not a choice: "Real-time team chat skipped. No matching MCP available, so the conversational record was not searchable."
 - **The source is provably irrelevant**, not just "probably irrelevant." A high bar: "Error / exception tracking skipped. Target is a build-time script with no runtime code path."
+- **Issue / ticket tracker unused for this project**, per **Issue / ticket tracker project policy** above (`issueTracker: none`, or no config and no seed ticket IDs). Skip even when a tracker MCP is installed: "Issue tracker skipped — project does not use an external tracker."
 
-If your scope assessment suggests a single-commit trivial target where the PR description already contains the complete answer, you may answer inline **only after** confirming all seven available category searches would be redundant. Say so explicitly. This should be rare.
+If your scope assessment suggests a single-commit trivial target where the PR description already contains the complete answer, you may answer inline **only after** confirming all available non-skipped category searches would be redundant. Say so explicitly. This should be rare.
 
 ## Step 4. Synthesize
 
